@@ -1,0 +1,181 @@
+{
+	"info": {
+		"_postman_id": "9b9d1ae9-998d-419f-8f5b-6aab1b9ffd30",
+		"name": "dummi",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "33727960"
+	},
+	"item": [
+		{
+			"name": "Create Post",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = JSON.parse(responseBody)\r",
+							"pm.collectionVariables.set(\"post_id\", jsonData.id);\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"text\": \"my text\",\r\n    \"owner\": \"60d0fe4f5311236168a109fc\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/post/create",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"post",
+						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Post",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.collectionVariables.get(\"{{post_id}}\");\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = JSON.parse(responseBody);  // распарсили ответ от сервера\r",
+							"jsonData.likes = 1000  // взяли из ответа лайки и изменили значение на 10\r",
+							"var app_id = pm.collectionVariables.get(\"app-id\");   //  создали переменную для постановки в URL ниже\r",
+							"var base_url = pm.collectionVariables.get(\"base_url\");  // создали переменную для постановки в URL ниже\r",
+							"\r",
+							"pm.sendRequest({\r",
+							"url: base_url+\"/post/\"+jsonData.id,  //  так как тут не работает подстановка переменных из коллекции, мы создали переменные выше чобы вставить их сюда\r",
+							"method: 'PUT',           // поменяли метод\r",
+							"header: {                   \r",
+							"'app-id': app_id,         //  так как запрос новый , в нем нет заголовков с id  и content type lj,fdbkb b[]\r",
+							"'Content-Type': 'application/json'         \r",
+							"},\r",
+							"body: {                  // так же добавили тело запроса \r",
+							"mode: 'raw',\r",
+							"raw: JSON.stringify(jsonData)  // это встроенная функция , которая преобразует объект  в нашем случае это ответ сервера  в строку JSON\r",
+							"}\r",
+							"}, function (err, response) {   //  этот код помогает просматривать тело ответа в консоли и проверки данных, полученных в ответе на запрос.\r",
+							"console.log(response.json());  \r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/post/{{post_id}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"post",
+						"{{post_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get post by ID",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/post/{{post_id}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"post",
+						"{{post_id}}"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "apikey",
+		"apikey": [
+			{
+				"key": "value",
+				"value": "{{app-id}}",
+				"type": "string"
+			},
+			{
+				"key": "key",
+				"value": "app-id",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": ""
+		},
+		{
+			"key": "post_id",
+			"value": ""
+		},
+		{
+			"key": "app-id",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
